@@ -248,11 +248,11 @@ In the above definition, the transition function is the main thing that is diffe
 \begin{enumerate}
     \item consumes from input the symbol used in the transition (if the symbol is $\varepsilon$, then no input is consumed),
     \item goes to a new state, and
-    \item replaces the string at the top of the stack with a string. Note that the string could also be $\varepsilon$, which means that we pop the stack.
+    \item replaces the symbol at the top of the stack with a string. Note that the string could also be $\varepsilon$, which means that we pop the stack.
 \end{enumerate}
 Given this, the correspondence to the above definition is clear.
 
-We require $Z_0$ in the above definition of a stack so that we can know when the stack is empty. Note that it is equivalent to use a specific symbol that we push in the beginning to signify the bottom of the stack. Some textbooks use this definition of the NPDA instead. We shall now define what it means for an NPDA to recognize a string.
+We require $Z_0$ in the above definition of a stack so that we can know when the stack is empty. Note that it is equivalent to use a specific symbol that we push in the beginning to signify the bottom of the stack. Some books use this definition of the NPDA instead. Next, we shall define what it means for an NPDA to recognize a string.
 
 \begin{definition}
 An NPDA $M=\writeNPDA$ is said to \textit{accept} a string $w$ if $w$ can be written as $w=w_1w_2\cdots w_m$, where each $w_i\in\Sigma_\varepsilon$ and sequence of states $r_0,r_1,\ldots,r_m\in Q$ and strings $s_0,s_1,\ldots,s_m\in\Gamma^*$ exist that satisfy the following three conditions.
@@ -300,7 +300,7 @@ So for instance, the PDA described in \ref{LwwRexercise} is depicted by the foll
 Construct the NPDA that recognizes the language $L=\{a^ib^jc^k\mid i=j\text{ or }j=k\}$
 \end{exercise}
 
-It is also useful to represent a PDA at some point of time by a triple $(q,w,\gamma)$, where $q$ is the state, $w$ is the remaining input, $\gamma$ is the stack contents. We conventionally show that top of the stack at the left end of $\gamma$. Such a triple is called an \textit{instantaneous description}, or ID of the automaton.
+It is also useful to represent a PDA at some point of time by a triple $(q,w,\gamma)$, where $q$ is the state, $w$ is the remaining input, and $\gamma$ is the stack contents. We conventionally show the top of the stack at the left end of $\gamma$. Such a triple is called an \textit{instantaneous description}, or ID of the automaton.
 
 \vspace{3mm}
 Let $V=\writeNPDA$ be an NPDA. Define $\vdash_P$, or just $\vdash$ when $P$ is understood, as follows. Suppose $(p,\alpha)\in\delta(q,a,X)$. Then for all strings $w\in\Sigma^*,\beta\in\Gamma^*$, we write
@@ -320,6 +320,7 @@ We shall call a sequence of IDs a \textit{computation}. We have the following.
 These three points just say that information that the NPDA does not look at does not affect its computation.
 
 \begin{theorem}
+\label{dontreaddontcare}
 If $P=\writeNPDA$ is an NPDA and $(q,x,\alpha)\vdash^*_P(p,y,\beta)$, then for any strings $w\in\Sigma^*, \gamma\in\Gamma^*$, $$(q,xw,\alpha\gamma)\vdash^*_P(p,yw,\beta\gamma).$$
 \end{theorem}
 \begin{proof}
@@ -341,18 +342,56 @@ The above set represents the set of input strings that when consumed, empty the 
 The following two theorems shows how the above two acceptances are intimately related.
 
 \begin{lemma}
+\label{finalifemptystk}
 If $L=N(P_N)$ for some NPDA $P_N=(Q,\Sigma,\Gamma,\delta_N,q_0,Z_0)$, then there is an NPDA $P_F$ such that $L(P_F)=L$.
 \end{lemma}
 \begin{proof}
-We first set the start symbol of $P_F$ we are creating as some $X_0\not\in\Gamma$, whose sole purpose is to let us know when we have reached the bottom of the stack. If we see $X_0$ on the stack for some input, then it means that $P_N$ would empty the stack for some input. We also set the start state of $P_F$ as some $p_0\not\in Q$, whose sole purpose is to push $Z_0$ onto the stack and send it to $q_0$. Then, $P_F$ simulates $P_N$, until the stack of $P_N$ is empty. We also create another state $p_f\not\in Q$, which is the accepting $P_F$. $P_F$ goes to $p_f$ if $P_N$ would have emptied the stack for that input (that is, it has $X_0$ on the top of the stack).
+We first set the start symbol of $P_F$ as some $X_0\not\in\Gamma$. If we see $X_0$ on the stack for some input, then it means that $P_N$ would empty the stack for that same input. We also set the start state of $P_F$ as some $p_0\not\in Q$, whose sole purpose is to push $Z_0$ onto the stack and send it to $q_0$. Then, $P_F$ simulates $P_N$, until the stack of $P_N$ is empty. We also create another state $p_f\not\in Q$, which is the (unique) accepting state of $P_F$. $P_F$ goes to $p_f$ if $P_N$ would have emptied the stack for that input (that is, it has $X_0$ on the top of the stack).
 
-That is, $$P_F=(Q\cup\{p_0,p_f\}, \Sigma, \Gamma\cup\{X_0\}, \delta_F, p_0, X_0, \{p_F\})$$where $\delta_F$ is defined as follows.
-$$
-\delta_F(q,a,X)=
-\begin{cases}
-\{(q_0,Z_0X_0)\}\quad q=p_0, a=\varepsilon, X=X_0 \\
-\delta_N(q,a,X)\quad q\in Q, a\in\Sigma_\varepsilon, X\in\Gamma \\
+%ADD DIAGRAM!
+That is, $$P_F=(Q\cup\{p_0,p_f\}, \Sigma, \Gamma\cup\{X_0\}, \delta_F, p_0, X_0, \{p_F\})$$where $\delta_F$ is given as follows.
+\begin{enumerate}
+    \item $\delta_F(p_0,\varepsilon,X_0)=\{q_0, Z_0X_0\}$. This pushes $Z_0$ onto the stack and sends $P_F$ to $q_0$.
+    \item $\delta_N(p,A,X)\subseteq\delta_F(p,a,X)$ for all $q\in Q, a\in\Sigma_\varepsilon$ and $X\in\Gamma$. This makes $P_F$ behave like $P_N$.
+    \item $\delta_F(p,a,X)$ also contains $\{(p_f,\varepsilon)\}$ for $q\in Q, a=\varepsilon$ and $X=X_0$. This sends $P_F$ to $p_f$ if $P_N$ would have emptied the stack for the same input.
+\end{enumerate}
 
-\end{cases}
-$$
+We must show that $w\in L(P_F)$ if and only if $w\in N(P_N)$.
+\begin{itemize}
+    \item[(If)] This is reasonably straightforward. We have that $(q_0,w,Z_0)\vdash^*_{P_N}(q,\varepsilon,\varepsilon)$.
+    
+    Using \ref{dontreaddontcare} gives $(q_0,w,Z_0X_0)\vdash^*_{P_N} (q,\varepsilon,X_0)$.
+    
+    Since $P_F$ has all the moves of $P_N$, we also have $(q_0,w,Z_0X_0)\vdash^*_{P_F} (q,\varepsilon,X_0)$. Along with the initial and final moves, we have
+    $$(p_0,w,X_0)\vdash_{P_F}(q_0,w,Z_0X_0)\vdash^*_{P_F} (q,\varepsilon,X_0)\vdash_{P_F}(p_f,\varepsilon,\varepsilon).$$
+    Thus $P_F$ accepts $w$ by final state.
+    
+    \item[(Only if)] The first and third rules of $\delta_F$ give very limited ways to accept $w$ by final state. We can only use the third rule at the last step and even then, it must have $X_0$ on the top of the stack. As $X_0$ only appears at the bottom-most position in the stack, and it must be inserted at the first step, any computation of $P_F$ that accepts $w$ must look like the above computation. Further, the entire computation except the first and last steps must be like a computation of $P_N$ with $X_0$ below the stack. (Why?) We conclude that $(q_0,w,Z_0)\vdash^*_\{P_N\}(q,\varepsilon,\varepsilon)$, that is, $w\in N(P_N)$.  
+\end{itemize}
+\end{proof}
+
+\begin{lemma}
+\label{emptyiffinal}
+    If $L=L(P_F)$ for some NPDA $P_F=(Q,\Sigma,\Gamma,\delta_F,q_0,Z_0)$, then there is an NPDA $P_N$ such that $N(P_N)=L$.
+\end{lemma}
+\begin{proof}
+Similar to the previous proof, we introduce $p_0,p_f\not\in Q$ and $X_0\not\in\Gamma$. Whenever $P_F$ enters an accepting state after consuming input $w$, the corresponding system in $P_N$ empties its stack. That is, let
+$$P_N=(Q\cup\{p_0,p_f\}, \Sigma, \Gamma\cup\{X_0\}, \delta_N, p_0, X_0)$$
+where $\delta_N$ is given as follows.
+%ADD DIAGRAM!
+\begin{enumerate}
+    \item $\delta_N(p_0,\varepsilon,X_0)=\{(q_0,Z_0X_0)\}$. This is the first step where $Z_0$ is pushed onto the stack so that $P_N$ may behave like $P_F$.
+    \item $\delta_F(q,a,Y)\subseteq\delta_N(q,a,Y)$ for all $q\in Q, a\in\Sigma_\varepsilon$ and $Y\in\Gamma$. This makes it behave like $P_F$.
+    \item $\delta_N(q,\varepsilon,Y)$ also contains $(p_f,\varepsilon)$ for $q\in F$ and $Y\in\Gamma$. If the $P_F$ part of $P_N$ is in an accepting state, it goes to $p_f$.
+    \item $\delta_N(p_f,\varepsilon,X)=\{(p_f,\varepsilon)\}$. This repeatedly pops the symbol on the stack until it is empty.
+\end{enumerate}
+
+    We must now prove that $w\in P_N$ if and only if $w\in P_F$. The ideas are similar to those used in the proof of \ref{finalifemptystk} so we leave it as an exercise to the reader.
+\end{proof}
+
+\begin{theorem}
+Let $L$ be a language. $L$ is accepted by final state by some NPDA if and only if it is accepted by empty stack by some NPDA.
+\end{theorem}
+\begin{proof}
+This follows directly from \ref{finalifemptystk} and \ref{emptyiffinal}.
 \end{proof}
