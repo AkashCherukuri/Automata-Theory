@@ -181,7 +181,7 @@ space/.style={minimum height=1.5em,matrix of nodes,row sep=-\pgflinewidth,column
     a & b & b & a \\};
     
     \node[below=0.1cm of input] {input};
-    \draw (control.15) -| (input-1-1);
+    \draw (control) -| (input-1-1);
     \end{tikzpicture}
 \end{center}
 
@@ -386,7 +386,7 @@ where $\delta_N$ is given as follows.
     \item $\delta_N(p_f,\varepsilon,X)=\{(p_f,\varepsilon)\}$. This repeatedly pops the symbol on the stack until it is empty.
 \end{enumerate}
 
-    We must now prove that $w\in P_N$ if and only if $w\in P_F$. The ideas are similar to those used in the proof of \ref{finalifemptystk} so we leave it as an exercise to the reader.
+    The ideas used in proving that $w\in P_N$ if and only if $w\in P_F$ are similar to those used in the proof of \ref{finalifemptystk} so we leave it as an exercise to the reader.
 \end{proof}
 
 \begin{theorem}
