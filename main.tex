@@ -1,5 +1,9 @@
 \documentclass{article}
 
+\title{Automata and Languages}
+\author{Amit Rajaraman}
+\date{March 2020}
+
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -12,16 +16,21 @@
 \usetikzlibrary{automata, positioning, arrows, matrix}
 \tikzset{->, >=stealth', node distance = 2cm}
 
+\usepackage{titlesec}
+\titleformat{\section}[block]{\sffamily\Large\filcenter\bfseries}{\S\thesection.}{0.25cm}{\Large}
+\titleformat{\subsection}[block]{\large\bfseries\sffamily}{\thesubsection.}{0.2cm}{\large}
+
+\usepackage{fancyhdr}
+\lhead{\sffamily{Automata and Langauages}}
+\chead{\sffamily{\thepage}}
+\rhead{\sffamily{-Amit Rajaraman}}
+\cfoot{}
+\pagestyle{fancy}
+
 \setlength\parindent{0pt}
 
-\usepackage{titlesec}
-\titleformat{\section}[block]
-  {}{\S\thesection}{0.25cm}{\Large}
-\title{Automata and Languages}
-\author{Amit Rajaraman}
-\date{March 2020}
-
 \renewcommand{\qedsymbol}{$\blacksquare$}
+
 \newcommand{\yields}{\Rightarrow}
 \newcommand{\derives}{\overset{*}{\yields}}
 \newcommand{\writeNPDA}{(Q,\Sigma,\Gamma,\delta,q_0,Z_0,F)}
@@ -42,7 +51,10 @@
 \newtheorem*{solution}{Solution}
 
 \begin{document}
+
 \maketitle
+\thispagestyle{empty}
+
 \tableofcontents
 \clearpage
 
