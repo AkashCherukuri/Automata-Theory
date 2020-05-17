@@ -112,12 +112,13 @@ Let $A$ and $B$ be languages. We define the following \textit{regular operations
 \begin{itemize}
     \item \textit{Union}: $A\cup B=\{x\mid x\in A \text{ or }x\in B\}$.
     \item \textit{Concatenation}: $A\circ B=\{xy\mid x\in A\text{ and }y\in B\}$.
-    \item \textit{Star}: $A^*=\{x_1x_2\cdots x_k\mid k>0\text{ and each }x_i\in A\}$
+    \item \textit{Kleene Star}: $A^*=\{x_1x_2\cdots x_k\mid k\geq 0\text{ and each }x_i\in A\}$
 \end{itemize}
 \end{definition}
 
-These operations are called regular operations as the class of regular languages are closed under these operations.
-\vspace{3mm}
+These operations are called regular operations as the class of regular languages are closed under these operations. Hencefort, we shall refer to the Kleene star operation as just the star operation.
+
+\vspace{2mm}
 We shall first show a proof that the class of regular languages is closed under the union operation. We shall revisit this later and provide a much simpler proof.
 \begin{proof}
 Let $M_1(Q_1,\Sigma_1,\delta_1,q_{01},F_1)$ and $M_2(Q_2,\Sigma_2,\delta_2,q_{02},F_2)$ recognize $A_1$ and $A_2$ respectively. Set $\Sigma=\Sigma_1\cup\Sigma_2$.
@@ -154,17 +155,19 @@ The following is an NFA (and not a DFA):
 \end{center}
 \end{example}
 
-The difference between a DFA and an NFA is immediately apparent. In the above example, there are multiple arrows from $q_1$ corresponding to input $1$ and no arrow from $q_2$ corresponding to $1$. We also see the addition of an $\varepsilon$ as input, which is not in the alphabet.
-\vspace{3mm}
+The difference between a DFA and an NFA is immediately apparent. In the above example, there are multiple arrows from $q_1$ corresponding to input $1$ and no arrow from $q_2$ corresponding to $1$. We also see the addition of $\varepsilon$ as input, which is not in the alphabet.
+
+\vspace{2mm}
 How does an NFA compute? At each point with multiple paths, the machine splits into multiple copies of itself, each one following one of the possibilites in parallel. Each copy of the machine then continues as before. If there are subsequent choices, it splits again. If the next input symbol does not appear on any of the arrows exiting the current state, that copy of the machine dies. Finally, if \textit{any} of these copies ends at an accept state, the NFA is said to accept the input string.
 
 If a state with an $\varepsilon$ exiting arrow is encountered, the machine splits into multiple copies,each one following one of the arrows, \textit{without reading any input}.
+
 \vspace{3mm}
 Nondeterminism is a sort of parallel computing where many ``threads'' are running simultaneously. The NFA splitting corresponds to the process of ``forking'' into several children, each proceeding separately. If any of these processes accepts, the entire computation accepts.
 
 We can also think of an NFA as a tree of possibilities where the tree splits at each point where the machine has more than one choice.
-\vspace{3mm}
 
+\vspace{3mm}
 But why are NFA's important? As we shall see shortly, every NFA can be converted to an equivalent DFA, and constructing NFA's is sometimes easier than constructing DFA's. An NFA is usually much smaller than its DFA counterpart and its functioning may be easier to understand.
 
 \begin{example}
@@ -228,6 +231,7 @@ A nondeterministic finite automaton is a $5$-tuple $(Q,\Sigma,\delta,q_0,F)$, wh
 \end{definition}
 
 Here $\Sigma_\varepsilon$ is $\Sigma\cup\{\varepsilon\}$ and $\mathcal{P}(Q)$ is the power set of $Q$.
+
 \vspace{3mm}
 Let $w=y_1y_2\cdots y_m$ be a string over the alphabet $\Sigma$. We say that a nondeterministic finite automaton N \textit{accepts} $w$ if we can write $w$ as $w=y_1y_2\cdots y_m$ where each $y_i\in\Sigma_\varepsilon$ and a sequence of states $r=r_0,r_1,\ldots,r_m$ exists in $Q$ such that:
 \begin{itemize}
@@ -319,7 +323,7 @@ Construct $N=(Q,\Sigma,\delta,q_1,F_2)$ to recognize $A_1\circ A_2$.
 \end{proof}
 
 \begin{theorem}
-The class of regular languages is closed under the star operation
+The class of regular languages is closed under the star operation.
 \end{theorem}
 \begin{proof}
 Let $N_1=(Q_1,\Sigma,\delta_1,q_1,F_1)$ recognize $A$. Construct $N=(Q,\Sigma,\delta,q_0,F)$ as follows to recognize $A^*$.
@@ -349,26 +353,28 @@ Prove that the class of regular languages is closed under the intersection opera
 
 \subsection{Regular Expressions}
 We use regular expressions to build up expressions describing languages, which are called regular expressions. An example is $(0\cup 1)\circ 0^*$. This language describes all strings that start with a $0$ or $1$ and are followed by $0$s. The concatenation symbol is usually omitted and understood implicitly, so the given expression can also be written as $(0\cup 1)0^*$.
-\vspace{3mm}
+
+\vspace{2mm}
 Regular expressions have several obvious uses in computer science, like searching for strings in a text that satisfy certain properties for instance.
 
-Like how in arithmetic, there is a precedence order in the operations wherein we give $\times$ and  higher precedence than $+$. Similarly, in regular expressions, the precedence order is star, then concatenation, and finally union. (unless parentheses are used to change the order)
+In arithmetic, there is a precedence order in the operations wherein we give $\times$ higher precedence than $+$. Similarly, in regular expressions, the precedence order is star, then concatenation, and finally union (unless parentheses are used to change the order).
 
 \begin{definition}
-We say that $R$ is a \textit{regular expression} if $R$ is
+We say that $R$ is a \textit{regular expression} if $R$ is equal to
 \begin{enumerate}
-    \item $a$ for some $a$ in the alphabet $\Sigma$
-    \item $\varepsilon$
-    \item $\emptyset$
-    \item $(R_1\cup R_2)$ for regular expressions $R_1$ and $R_2$
-    \item $(R_1\circ R_2)$ for regular expressions $R_1$ and $R_2$
+    \item $a$ for some $a$ in the alphabet $\Sigma$,
+    \item $\varepsilon$,
+    \item $\emptyset$,
+    \item $(R_1\cup R_2)$ for regular expressions $R_1$ and $R_2$,
+    \item $(R_1\circ R_2)$ for regular expressions $R_1$ and $R_2$, or
     \item $(R_1^*)$ for regular expression $R_1$.
 \end{enumerate}
 \end{definition}
 
 
 \textit{Remark.} Do not confuse the regular expressions $\varepsilon$ and $\emptyset$. $\{\varepsilon\}$ is the language containing a single string, the empty string, whereas $\emptyset$ is the language containing no strings.
-\vspace{3mm}
+
+\vspace{2mm}
 Given a regular expression $R$, we use $L(R)$ to denote the language of $R$.
 
 For convenience, we use $R^+$ to denote $RR^*$, that is, the language has all strings that are $1$ or more concatenations of strings from $R$. So $R^+\cup\{\varepsilon\}=R^*$. We also let $R^k$ to denote the concatenation of $k$ $R$'s  with each other.
@@ -389,7 +395,7 @@ Describe the languages corresponding to the following regular expressions.
     \item $\emptyset$
     \item $\{\varepsilon\}$
     \item $\{\varepsilon,0,1,01\}$
-    \item $\{w\mid w\text{ is a string of length }2\}$
+    \item $\{w\mid w\text{ is a string of even length }\}$
     \item $\{w\mid \text{every $0$ in $w$ is followed by at least one $1$}\}$
 \end{enumerate}
 \end{solution}
@@ -403,7 +409,6 @@ Prove the following identities for any regular language $R$.
 \end{exercise}
 
 \vspace{3mm}
-
 Regular expressions and finite automata are equivalent in their descriptive power, which may not be an immediately obvious fact. However any of them can be converted to the other.
 
 \begin{lemma}
@@ -534,6 +539,7 @@ On the other hand, if $G'$ accepts some sequence $w$, then the arrow from $q_i$ 
 \vspace{2mm}
 The induction hypothesis merely says that when the algorithm calls itself recursively on $G'$, the resulting regular expression is equivalent to $G'$ (because $G'$ has $k-1$ states). As $G$ is equivalent to $G'$, $G$ must also be equivalent to the resulting regular expression, namely $\texttt{CONVERT}(G)$.
 \end{proof}
+
 \vspace{1mm}
 \begin{theorem}
 \label{regIffRegExp}
@@ -577,7 +583,7 @@ For any string $w=w_1w_2\cdots w_n$, the \textit{reverse} of $w$, written $w^\ma
 \clearpage
 
 \subsection{Nonregular Languages}
-As we have regular languages, the presence of \textit{nonregular} languages is also expected, that is, languages that cannot be recognized by any finite automaton. For instance, consider the language $B=\{0^n1^n\mid n\geq 0\}$. We wouldn't expect to have a finite automaton that recognizes this language as it appears we'd need to find a way to count the number of $0$s processed so far, and since this number is not bounded above and we only have a finite number of memory. Indeed, this language cannot be recognized by any finite automaton.
+As we have regular languages, the presence of \textit{nonregular} languages is also expected, that is, languages that cannot be recognized by any finite automaton. For instance, consider the language $B=\{0^n1^n\mid n\geq 0\}$. We wouldn't expect to have a finite automaton that recognizes this language as it appears we would need to count the number of $0$s processed so far (which is not bounded above), and we only have a finite number of memory. Indeed, this language cannot be recognized by any finite automaton.
 
 \vspace{2mm}
 However, this immediately begs the question, what is a condition to determine whether a language is regular or nonregular? 
